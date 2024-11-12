@@ -1,0 +1,146 @@
+version: 2
+
+models:
+  - name: mart_job_salary_info
+    description: "Contains all job data with an indication if the salary is negotiable."
+    columns:
+      - name: source
+        description: "Data source"
+        tests:
+          - not_null:
+              severity: warn
+      - name: report_date
+        description: "Report date"
+        tests:
+          - not_null:
+              severity: warn
+      - name: job_title
+        description: "Job title"
+        tests:
+          - not_null:
+              severity: warn
+      - name: company_name
+        description: "Company name"
+        tests:
+          - not_null:
+              severity: warn
+      - name: education
+        description: "Education requirement"
+        tests:
+          - not_null:
+              severity: warn
+      - name: job_category
+        description: "Job category"
+        tests:
+          - not_null:
+              severity: warn
+      - name: salary
+        description: "Salary"
+        tests:
+          - not_null:
+              severity: warn
+      - name: location_region
+        description: "Location region"
+        tests:
+          - not_null:
+              severity: warn
+      - name: experience
+        description: "Experience requirement"
+        tests:
+          - not_null:
+              severity: warn
+      - name: industry
+        description: "Industry"
+        tests:
+          - not_null:
+              severity: warn
+      - name: tools
+        description: "Tools or skills required"
+        tests:
+          - not_null:
+              severity: warn
+      - name: is_salary_negotiable
+        description: "Indicates if the job's salary is negotiable"
+        tests:
+          - not_null:
+              severity: warn
+      - name: primary_key
+        description: "Unique identifier, MD5 hash based on report date, job title, company name, location, experience, and tools"
+        tests:
+          - not_null:
+              severity: warn
+
+models:
+  - name: mart_job_location_analysis
+    description: "Contains all job data with additional location-related fields for analysis."
+    columns:
+      - name: source
+        description: "Data source"
+        tests:
+          - not_null:
+              severity: warn
+      - name: report_date
+        description: "Report date"
+        tests:
+          - not_null:
+              severity: warn
+      - name: job_title
+        description: "Job title"
+        tests:
+          - not_null:
+              severity: warn
+      - name: company_name
+        description: "Company name"
+        tests:
+          - not_null:
+              severity: warn
+      - name: education
+        description: "Education requirement"
+        tests:
+          - not_null:
+              severity: warn
+      - name: job_category
+        description: "Job category"
+        tests:
+          - not_null:
+              severity: warn
+      - name: salary
+        description: "Salary"
+        tests:
+          - not_null:
+              severity: warn
+      - name: experience
+        description: "Experience requirement"
+        tests:
+          - not_null:
+              severity: warn
+      - name: industry
+        description: "Industry"
+        tests:
+          - not_null:
+              severity: warn
+      - name: tools
+        description: "Tools or skills required"
+        tests:
+          - not_null:
+              severity: warn
+      - name: primary_key
+        description: "Unique identifier, MD5 hash based on report date, job title, company name, location, experience, and tools"
+        tests:
+          - not_null:
+              severity: warn
+      - name: location_region_name
+        description: "Region name (city or county), extracted from location_region"
+        tests:
+          - not_null:
+              severity: warn
+      - name: location_district
+        description: "District name, extracted from location_region"
+        tests:
+          - not_null:
+              severity: warn
+      # - name: is_taipei_region
+      #   description: "Indicates if the job is located in the Taipei region, based on location_region"
+      #   tests:
+      #     - not_null:
+      #         severity: warn

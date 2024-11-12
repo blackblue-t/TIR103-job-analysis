@@ -1,0 +1,188 @@
+version: '3'
+services:
+  mysql:
+    image: mysql:8.0
+    environment:
+      MYSQL_ROOT_PASSWORD: airflow_pass
+      MYSQL_DATABASE: airflow
+      MYSQL_USER: airflow_user
+      MYSQL_PASSWORD: airflow_pass
+    command: --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    volumes:
+      - mysql_data:/var/lib/mysql
+    ports:
+      - "3306:3306"
+
+  airflow-init:
+    image: apache/airflow:2.10.2
+    depends_on:
+      mysql:
+        condition: service_healthy
+    environment:
+      - AIRFLOW__DATABASE__SQL_ALCHEMY_CONN=mysql+mysqldb://airflow_user:airflow_pass@mysql:3306/airflow
+    command: >
+      bash -c "
+      airflow db migrate &&
+      airflow users create --username admin --password admin --firstname admin --lastname admin --role Admin --email admin@example.com
+      "
+
+  airflow-webserver:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    depends_on:
+      mysql:
+        condition: service_healthy
+      airflow-init:
+        condition: service_completed_successfully
+    environment:
+      - AIRFLOW__DATABASE__SQL_ALCHEMY_CONN=mysql+mysqldb://airflow_user:airflow_pass@mysql:3306/airflow
+      - AIRFLOW__CORE__LOAD_EXAMPLES=False
+      - AIRFLOW__WEBSERVER__SECRET_KEY=your_secret_key_here
+      - AIRFLOW_HOME=/opt/airflow
+      - AIRFLOW__CORE__EXECUTOR=LocalExecutor
+      - PYTHONPATH=/opt/airflow:/opt/airflow/dags:/opt/airflow/tasks
+      - AIRFLOW_VAR_GCS_BUCKET_NAME=job_raw_data
+      - AIRFLOW_VAR_GCS_PROJECT_ID=tir103-job-analysis
+      - AIRFLOW_VAR_GCS_FILE_NAME=104data.cleaning.csv
+      - AIRFLOW_VAR_BQ_TABLE_ID=tir103-job-analysis.104.raw_data
+      - DBT_PROJECT_ID=tir103-job-analysis
+      - DBT_DATASET=tir103-job-analysis.104
+      - PYTHONWARNINGS=ignore::DeprecationWarning
+      - AIRFLOW__CORE__WARNINGS_ENABLED=False
+      - GOOGLE_APPLICATION_CREDENTIALS=/opt/airflow/keys/service-account.json
+    volumes:
+      - type: bind
+        source: ./dags
+        target: /opt/airflow/dags
+        read_only: false
+      - type: bind
+        source: ./config
+        target: /opt/airflow/config
+        read_only: true
+      - type: bind
+        source: ./resources
+        target: /opt/airflow/resources
+        read_only: true
+      - type: bind
+        source: ./logs
+        target: /opt/airflow/logs
+      - type: bind
+        source: ./plugins
+        target: /opt/airflow/plugins
+      - type: bind
+        source: ./jobs_csv
+        target: /opt/airflow/jobs_csv
+        read_only: false
+      - type: bind
+        source: ./data
+        target: /opt/airflow/data
+        read_only: false
+      - type: bind
+        source: ./tasks
+        target: /opt/airflow/tasks
+        read_only: false
+      - type: bind
+        source: ./dbt_project
+        target: /opt/airflow/dbt_project
+        read_only: false
+      - type: bind
+        source: ./.dbt
+        target: /opt/airflow/.dbt
+        read_only: false
+      - type: bind
+        source: ./keys/service-account.json
+        target: /opt/airflow/keys/service-account.json
+        read_only: true
+    ports:
+      - "8080:8080"
+      - "8081:8081"
+    user: "1005:0"  # 指定用户和组
+    command: airflow webserver
+    healthcheck:
+      test: ["CMD", "curl", "--fail", "http://localhost:8080/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+    restart: always
+
+  airflow-scheduler:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    depends_on:
+      mysql:
+        condition: service_healthy
+      airflow-init:
+        condition: service_completed_successfully
+    environment:
+      - AIRFLOW__DATABASE__SQL_ALCHEMY_CONN=mysql+mysqldb://airflow_user:airflow_pass@mysql:3306/airflow
+      - AIRFLOW__CORE__LOAD_EXAMPLES=False
+      - AIRFLOW__WEBSERVER__SECRET_KEY=your_secret_key_here
+      - AIRFLOW_HOME=/opt/airflow
+      - AIRFLOW__CORE__EXECUTOR=LocalExecutor
+      - PYTHONPATH=/opt/airflow:/opt/airflow/dags:/opt/airflow/tasks
+      - AIRFLOW_VAR_GCS_BUCKET_NAME=job_raw_data
+      - AIRFLOW_VAR_GCS_PROJECT_ID=tir103-job-analysis
+      - AIRFLOW_VAR_GCS_FILE_NAME=104data.cleaning.csv
+      - AIRFLOW_VAR_BQ_TABLE_ID=tir103-job-analysis.104.raw_data
+      - DBT_PROJECT_ID=tir103-job-analysis
+      - DBT_DATASET=tir103-job-analysis.104
+      - PYTHONWARNINGS=ignore::DeprecationWarning
+      - AIRFLOW__CORE__WARNINGS_ENABLED=False
+      - GOOGLE_APPLICATION_CREDENTIALS=/opt/airflow/keys/service-account.json
+    volumes:
+      - type: bind
+        source: ./dags
+        target: /opt/airflow/dags
+        read_only: false
+      - type: bind
+        source: ./logs
+        target: /opt/airflow/logs
+        read_only: false
+      - type: bind
+        source: ./plugins
+        target: /opt/airflow/plugins
+        read_only: false
+      - type: bind
+        source: ./config
+        target: /opt/airflow/config
+        read_only: true
+      - type: bind
+        source: ./resources
+        target: /opt/airflow/resources
+        read_only: true
+      - type: bind
+        source: ./tasks
+        target: /opt/airflow/tasks
+        read_only: false
+      - type: bind
+        source: ./jobs_csv
+        target: /opt/airflow/jobs_csv
+        read_only: false
+      - type: bind
+        source: ./data
+        target: /opt/airflow/data
+        read_only: false
+      - type: bind
+        source: ./dbt_project
+        target: /opt/airflow/dbt_project
+        read_only: false
+      - type: bind
+        source: ./.dbt
+        target: /opt/airflow/.dbt
+        read_only: false
+      - type: bind
+        source: ./keys/service-account.json
+        target: /opt/airflow/keys/service-account.json
+        read_only: true
+    user: "1005:0"  # 指定用户和组
+    command: airflow scheduler
+    restart: always
+volumes:
+  mysql_data:
