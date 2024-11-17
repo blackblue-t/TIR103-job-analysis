@@ -14,18 +14,18 @@ An automated ETL pipeline for collecting and analyzing job market data from 1111
 │   └── yes123_workflow.py            # Yes123 crawler
 ├── tasks/              # Task modules
 │   ├── __init__.py
-│   ├── merge_all_data                # for data cleaning process
+│   ├── merge_all_data/                # for data cleaning process
 |   |   ├──csv_104.py                 # data cleaning for 104
 |   |   ├──csv_1111.py                # data cleaning for 1111
 |   |   ├──csv_cake.py                # data cleaning for cake
 |   |   ├──csv_yes123.py              # data cleaning for yes123
 |   |   ├──csv_gcptobqtest.py         # data upload from gcs to bq
 |   |   └──merge.py                   # merge 4 sources data
-│   └── script_123                    # yes123 crawler code
+│   └── script_123/                    # yes123 crawler code
 ├── utils/              # Utility functions
 │   └── __init__.py
 ├── resources/          # Resource files
-│   └── word_dict                     # word dictionary
+│   └── word_dict/                     # word dictionary
 |       ├──dict.txt.big               # dictionary from jieba
 |       ├──lowercase_detail_word.txt  # dictionary for detail words
 |       └── stop_words.txt            # dictionary for stop words

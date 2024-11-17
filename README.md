@@ -1,17 +1,26 @@
 # TIR103-job-analysis
+An automated ETL pipeline for collecting and analyzing job market data from 1111/Yes123/104/cake Job Bank, powered by Apache Airflow.
 
-目標:
-在GCP啟動虛擬機VM，爬取1111、104、yes123、cake四個網站的求職資料，並進行資料處理與清洗，上傳GCS儲存空間與Big Querry 連動。  
-透過dbt 將資料從BQ取出來處理後作為後續tableau的前置資料，最後以tableau 來進行視覺化呈現
+## 📁 Project Structure
+<pre>
+/airflow
+├── 1111&yes123/        # ETL for 1111,yes123 / merge all sources data and cleaning
+├── 104/                # ETL for 104 / dbt processing
+├── cake/               # ETL for cake
+└── README.md           # Project documentation
+</pre>
+please read the detail README in the directory
 
-使用技術:  
-  Python 爬蟲  
-  Python pandas  
-  Python jieba 分析字詞  
-  Airflow  
-  dbt  
-  Big Querry  
-  Tableau  
+## 🛠 Tech Stack
+- 🐍 Python: Core development
+- 🌪 Apache Airflow: Workflow management
+- ☁️ Google Cloud Platform:
+  - 📦 Cloud Storage: Data storage
+  - 📊 BigQuery: Data warehousing
+- 🕷 BeautifulSoup4: Web parsing
+- 🐼 Pandas: Data processing
+- 🔄 DBT: Data transformation
+
 
 
 
