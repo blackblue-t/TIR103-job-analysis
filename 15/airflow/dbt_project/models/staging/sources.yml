@@ -1,8 +1,0 @@
-version: 2
-
-sources:
-  - name: final_data_source
-    database: tir103-job-analysis
-    schema: final_data
-    tables:
-      - name: final_data
