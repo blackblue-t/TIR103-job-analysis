@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Run Spider</title>
+    <script>
+        // 設定爬蟲執行的時間 
+        const spiderExecutionTime = 600000; // 10 分鐘
+
+        // 當頁面載入時觸發
+        window.onload = function() {
+            // 自動提交表單執行爬蟲
+            document.getElementById("run_spider_form").submit();
+
+            // 設定在爬蟲結束後觸發下載 CSV
+            setTimeout(function() {
+                document.getElementById("download_csv_link").click(); // 自動點擊下載按鈕
+            }, spiderExecutionTime); 
+        };
+    </script>
+</head>
+<body>
+    <h1>Run Spider</h1>
+    <form id="run_spider_form" action="/run_spider" method="post">
+        <button type="submit" style="display:none;">Run Spider</button>
+    </form>
+    <br>
+    <a href="/download_csv" id="download_csv_link" style="display:none;">Download CSV Result</a>
+</body>
+</html>
