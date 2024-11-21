@@ -70,20 +70,7 @@ git clone https://github.com/daniel561105/TIR103-job-analysis.git
 ## 2. Build Environment
 
 For detailed instructions, refer to the [Notion page](https://jewel-beginner-1f2.notion.site/GPT-airflow-123a91e3b7fa806383aaf899459f06c0?pvs=4)
-Follow these steps to set up the Airflow environment:
 
-```bash
-# Download the official Docker Compose configuration
-curl -LfO 'https://airflow.apache.org/docs/apache-airflow/2.7.2/docker-compose.yaml'
-
-# Create necessary directories for Airflow
-mkdir -p ./dags ./logs ./plugins
-
-# Set up environment variables
-echo -e "AIRFLOW_UID=$(id -u)\nAIRFLOW_GID=0" > .env
-
-# Start the Airflow environment
-docker-compose up -d
 3. Configure GCP credentials:
 \`\`\`bash
 export GOOGLE_APPLICATION_CREDENTIALS="your-credentials.json"
