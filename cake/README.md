@@ -67,7 +67,7 @@ An automated ETL pipeline for collecting and analyzing job market data from cake
 git clone https://github.com/daniel561105/TIR103-job-analysis.git
 \`\`\`
 
-## 2. Build Environment
+2. Build Environment:
 
 For detailed instructions, refer to the [Notion page](https://jewel-beginner-1f2.notion.site/GPT-airflow-123a91e3b7fa806383aaf899459f06c0?pvs=4)
 
