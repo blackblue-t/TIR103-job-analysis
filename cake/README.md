@@ -67,15 +67,23 @@ An automated ETL pipeline for collecting and analyzing job market data from cake
 git clone https://github.com/daniel561105/TIR103-job-analysis.git
 \`\`\`
 
-2. Build environment
-https://jewel-beginner-1f2.notion.site/GPT-airflow-123a91e3b7fa806383aaf899459f06c0?pvs=4
-\`\`\`bash
-curl -LfO 'https://airflow.apache.org/docs/apache-airflow/2.7.2/docker-compose.yaml'
-mkdir -p ./dags ./logs ./plugins
-echo -e "AIRFLOW_UID=$(id -u)\nAIRFLOW_GID=0" > .env
-docker-compose up -d
-\`\`\`
+## 2. Build Environment
 
+For detailed instructions, refer to the [Notion page](https://jewel-beginner-1f2.notion.site/GPT-airflow-123a91e3b7fa806383aaf899459f06c0?pvs=4)
+Follow these steps to set up the Airflow environment:
+
+```bash
+# Download the official Docker Compose configuration
+curl -LfO 'https://airflow.apache.org/docs/apache-airflow/2.7.2/docker-compose.yaml'
+
+# Create necessary directories for Airflow
+mkdir -p ./dags ./logs ./plugins
+
+# Set up environment variables
+echo -e "AIRFLOW_UID=$(id -u)\nAIRFLOW_GID=0" > .env
+
+# Start the Airflow environment
+docker-compose up -d
 3. Configure GCP credentials:
 \`\`\`bash
 export GOOGLE_APPLICATION_CREDENTIALS="your-credentials.json"
@@ -93,15 +101,14 @@ airflow scheduler
 ## 📋 Data Processing
 
 ### 1️⃣ Data Collection
-- **Automated Web Scraping**: Uses `main_scrap.py` to scrape job listings from the 104 Job Bank.
+- **Automated Web Scraping**: Uses `test.py` to scrape job listings from the cake Job Bank.
   - **Keyword Splitting**: Divides keywords into smaller chunks for efficient processing.
   - **Retry Mechanism**: Implements retries and backoff strategies for robust scraping.
   - **Timeout Handling**: Ensures each keyword is processed within a specified time limit.
-  - **Random Delays**: Introduces random delays to mimic human behavior and avoid detection.
 
 ### 2️⃣ Data Cleaning
-- **Data Consolidation**: Uses `data_clean.py` to merge and clean data from multiple CSV files.
-  - **Custom Dictionary**: Utilizes Jieba with a custom dictionary for precise text segmentation.
+- **Data Consolidation**: Uses `test.py` to merge and clean data from multiple CSV files.
+  - **Format Changing**: Find the pattern of data and use regular expression to clean.
   - **Skill Extraction**: Extracts relevant skills and tools from job descriptions and requirements.
   - **Data Normalization**: Standardizes date formats and handles missing values.
   - **Column Mapping**: Renames and reorders columns for consistency and clarity.
@@ -116,25 +123,16 @@ airflow scheduler
 - **Data Warehouse Integration**: Loads data into BigQuery for advanced querying and analysis.
 - **Query Optimization**: Implements partitioning and indexing strategies for efficient data retrieval.
 
-### 4️⃣ Data Transformation
-- **DBT Models**: Uses DBT for data modeling and transformation
-  - **Incremental Processing**: Handles incremental data loads
-  - **Data Quality Tests**: Implements data quality checks
-  - **Documentation**: Auto-generates data documentation
 
 ## 📈 Monitoring
 
 ### DAG Overview
-- **DAG Name**: `job_scraping_pipeline`
-  - **Description**: Automates the ETL process for scraping job listings from 104 Job Bank.
-  - **Schedule**: Runs every 7 days at midnight.
-  - **Timeout**: Each DAG run has a timeout of 8 hours to ensure timely completion.
+- **DAG Name**: `main_dag`
+  - **Description**: Automates the ETL process for scraping job listings from cake Job Bank.
 
 ### Task Groups
 - **Scraping Tasks**: 
   - **Function**: Executes web scraping for different keyword chunks.
-  - **Concurrency**: Limited to 6 concurrent tasks to manage resource usage.
-  - **Retries**: Each task retries up to 3 times with a 5-minute delay between attempts.
 
 - **Data Processing Tasks**:
   - **Categorize Jobs**: Classifies job listings into categories.
@@ -144,11 +142,7 @@ airflow scheduler
 
 - **BigQuery Load Task**:
   - **Function**: Loads processed data into BigQuery for analysis.
-  - **Execution Timeout**: Set to 2 hours to handle large data volumes.
 
-- **DBT Transform Task**:
-  - **Function**: Runs DBT models for data transformation
-  - **Execution Timeout**: Set to 1 hour to handle large data volumes
 
 ### Logging and Error Handling
 - **Logging**: 
@@ -169,7 +163,7 @@ airflow scheduler
 - **Resource Usage**: Monitors CPU and memory usage to optimize performance.
 
 ## ⚠️ Important Notes
-- Respect 104 website's robots.txt
+- Respect cake website's robots.txt
 - Regular keyword updates
 - Monitor cloud usage
 
@@ -191,28 +185,6 @@ airflow scheduler
 - tools: Tools required for the job
 - insert_timestamp: Timestamp of data insertion (used for partitioning)
 
-### Common Issues
-1. Modifying scraping keywords:
-   - Edit resources/lowercase_detail_word.txt
-   - Customize keyword list
-
-2. Adjusting scraping frequency:
-   - Modify DAG schedule
-   - Default: Daily update
-
-3. Data storage locations:
-   - CSV: data/104data.cleaning.csv
-   - GCS: {project-id}-104-job-data
-   - BigQuery: job_data_dataset.job_table
-
-### Performance Guidelines
-- Scraping interval: 5-10 seconds
-- Batch size: 500-1000 records
-- Update schedule: Off-peak hours
-- BigQuery optimization:
-  - Date partitioning
-  - Proper indexing
-  - Regular maintenance
 
 ### Development Roadmap
 - [ ] Job trend analysis
@@ -242,12 +214,6 @@ airflow scheduler
 - The pipeline is deployed on a Google Cloud Platform (GCP) Virtual Machine (VM).
 - Secure Shell (SSH) is used for remote access and management of the VM.
 - Ensure that the VM has the necessary permissions and access to GCP services like BigQuery and Cloud Storage.
-
-### Performance Metrics
-- Average scraping rate: ~0.1 pages/second (approximately 1 page every 10 seconds)
-- Data cleaning rate: 60 records/minute
-- Typical daily volume: 5000-10000 records
-- Storage requirement: ~1.5GB to 3GB/month
 
 ### Version History
 - 2024/11: Initial Release

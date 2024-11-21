@@ -3,7 +3,6 @@ from airflow import DAG
 from airflow.operators.python import PythonOperator
 from airflow.operators.bash import BashOperator
 
-# 引入你的爬蟲與 GCS 上傳函數
 from tasks.app import run_all
 from tasks.gcs_upload import upload_to_gcs
 

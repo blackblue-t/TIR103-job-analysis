@@ -6,6 +6,7 @@ import pandas as pd
 import numpy as np
 import re
 
+# 自己看要加什麼關鍵字進去
 keys = ['嵌入式工程師','資安滲透工程師']
 
 url = "https://www.cake.me/jobs"
@@ -16,32 +17,32 @@ def fetch_links(key, page_range):
         page_url = f"{url}/{key}?page={i}"
         try:
             response = requests.get(page_url)
-            response.raise_for_status()  # 檢查請求是否成功
+            response.raise_for_status()  
             
             soup = BeautifulSoup(response.text, "html.parser")
             links = soup.find_all('a', class_='JobSearchItem_jobTitle__bu6yO')
             for link in links:
                 href = link.get('href')
-                if href and href not in all_company_links[key]:  # 確保 href 存在且不重複
+                if href and href not in all_company_links[key]:  # 因為有些頁面會跳到公司自己的網址
                     # 將前綴加到 href
                     full_url = f"https://www.cake.me{href}" if not href.startswith("http") else href
-                    all_company_links[key].append(full_url)  # 將完整 URL 添加到對應的關鍵字列表
+                    all_company_links[key].append(full_url)  # 完整 URL 加到對應的關鍵字裡面
         except requests.exceptions.RequestException as e:
             
             break  # 跳出當前頁面循環，開始下一個關鍵字
         
-        time.sleep(5)  # 暫停5秒
+        time.sleep(5)  
 
-# 遍歷所有關鍵字
+# 每次查20多個就會斷掉，但是不同關鍵字又不會斷，而且一個關鍵字最多100頁，所以改成分五次抓取
 for key in keys:
     for start in range(1, 101, 20):
         fetch_links(key, (start, start + 20))
 
-def get_job_data(url, key):  # 增加 key 參數
+def get_job_data(url, key):  
     response = requests.get(url)
     soup = BeautifulSoup(response.text, "html.parser")
 
-    # 提取所需的資料
+    # 提取所需的資料(看原始碼慢慢找)
     job_title_elements = soup.find('h1', class_='JobDescriptionLeftColumn_title__4MYvd')
     job_title = job_title_elements.get_text(strip=True) if job_title_elements else "N/A"
     
@@ -64,9 +65,9 @@ def get_job_data(url, key):  # 增加 key 參數
     company_props = company_props[0].text if company_props else "N/A"
 
 
-    # 整合資料，新增 'key'
+    # 做 dataframe 前置作業
     job_data = {
-        "category_secondary": key,  # 新增關鍵字
+        "category_secondary": key,  
         "job_title": job_title,
         "company_name": company_name,
         "industry": company_props,
@@ -81,11 +82,11 @@ def get_job_data(url, key):  # 增加 key 參數
 
 # 把所有 URL 跑一遍然後把資料做成 DataFrame
 results = []
-for key, links in all_company_links.items():  # 迭代字典中的每個關鍵字和對應的鏈接
+for key, links in all_company_links.items():  
     for link in links:
-        datas = get_job_data(link, key)  # 傳遞關鍵字
+        datas = get_job_data(link, key)  
         results.append(datas)
-        time.sleep(4)  # 暫停 4 秒以避免過於頻繁的請求
+        time.sleep(4)  
 
 # 創建 DataFrame
 df = pd.DataFrame(results)
